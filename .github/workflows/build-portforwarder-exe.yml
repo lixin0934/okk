@@ -1,0 +1,46 @@
+name: Build PortForwarder EXE
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-commit:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Publish single-file EXE
+        run: dotnet publish PortForwarder/PortForwarder.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o out
+
+      - name: Copy EXE into repository
+        run: copy /Y out\PortForwarder.exe PortForwarder\PortForwarder.exe
+
+      - name: Commit EXE to repository
+        shell: pwsh
+        run: |
+          if (-not (git diff --quiet -- PortForwarder/PortForwarder.exe)) {
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add PortForwarder/PortForwarder.exe
+            git commit -m "chore: update PortForwarder.exe [skip ci]"
+            git push
+          } else {
+            Write-Host "PortForwarder.exe is already up to date."
+          }
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PortForwarder-win-x64
+          path: out/PortForwarder.exe
