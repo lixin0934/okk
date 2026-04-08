@@ -14,30 +14,22 @@ dotnet run --project PortForwarder/PortForwarder.csproj
 
 ## 打包为 EXE（本地有 .NET 环境）
 
-在项目根目录执行：
-
 ```bash
 dotnet publish PortForwarder/PortForwarder.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
 ```
 
-输出 EXE 路径：
+输出 EXE：
 
 `PortForwarder/bin/Release/net8.0/win-x64/publish/PortForwarder.exe`
 
-## 没有本地环境也能打包（推荐）
+## 没有本地环境：直接在项目里生成 EXE（推荐）
 
-仓库已提供 GitHub Actions 工作流：`.github/workflows/build-portforwarder-exe.yml`。
+仓库已提供工作流：`.github/workflows/build-portforwarder-exe.yml`。
 
-你只需要：
-1. 把代码推到 GitHub。
-2. 打开仓库的 **Actions** 页。
-3. 运行 **Build PortForwarder EXE** 工作流。
-4. 在工作流产物（Artifacts）下载 `PortForwarder-win-x64`，里面就是 `PortForwarder.exe`。
+执行步骤：
+1. 把代码推送到 GitHub。
+2. 在仓库 **Actions** 页面手动运行 **Build PortForwarder EXE**。
+3. 工作流会自动把 `PortForwarder.exe` 提交回仓库路径：`PortForwarder/PortForwarder.exe`。
+4. 你也可以在 Artifacts 下载 `PortForwarder-win-x64`。
 
-这样你不需要在自己电脑安装 .NET。
-
-## 可选：生成体积更小的 EXE
-
-```bash
-dotnet publish PortForwarder/PortForwarder.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true
-```
+这样你不需要在自己电脑安装 .NET 环境，也能在项目中直接得到 EXE。
